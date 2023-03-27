@@ -166,7 +166,19 @@ def admin():
 
 @app.errorhandler(401)
 def custom_401(e):
-	return jsonify(error=str(e)), 401
+	return jsonify(error=str(e)), 401 # not a admin
+
+@app.errorhandler(404)
+def custom_404(e):
+	return jsonify(error=str(e)), 404 # not found
+
+@app.errorhandler(500)
+def custom_500(e):
+	return jsonify(error=str(e)), 500 # server error
+
+@app.errorhandler(400)
+def custom_400(e):
+	return jsonify(error=str(e)), 400 # bad request
 
 if __name__ == "__main__":
 	app.run(host ="127.0.0.1")
