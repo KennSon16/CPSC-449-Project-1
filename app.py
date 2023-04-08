@@ -7,6 +7,8 @@ from datetime import timedelta
 import jwt
 import datetime
 from functools import wraps
+import os
+from werkzeug.utils import secure_filename
 
 # # import MySQLdb.cursors
 import re
@@ -55,7 +57,49 @@ def token_required(f):
 		return f(*args, **kwargs)
 	return decorated
 
+app.config["IMAGE_UPLOADS"] = os.path.join('\CPSC-449-Project-1','uploads') # configure image upload folder to uploads
+app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"] # configure allowed image extensions
+app.config["MAX_IMAGE_FILESIZE"] = 0.5 * 1024 * 1024 # configure max image file size, 0.5MB
+
+def allowed_image(filename):
+	if not "." in filename:
+		return False
+	ext = filename.rsplit(".", 1)[1]
+	if ext.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"]:
+		return True
+	else:
+		return False
+
+def allowed_image_filesize(filesize):
+	if int(filesize) <=  app.config["MAX_IMAGE_FILESIZE"]:
+		return True
+	else: 
+		return False
+	
 @app.route('/')
+
+@app.route('/upload-image', methods=['GET', 'POST'])
+def upload_image():
+	if request.method == 'POST':
+		if request.files:
+			#print(request.cookies)
+			if not allowed_image_filesize(request.cookies.get("filesize")):
+				print("File exceeds maximum size")
+				return redirect(request.url)
+			image = request.files['image']
+			if image.filename == "":
+				print("Image must have a filename")
+				return redirect(request.url)
+			if not allowed_image(image.filename):
+				print("That image extension is not allowed")
+				return redirect(request.url)
+			else:
+				filename = secure_filename(image.filename)
+				image.save(os.path.join(app.config["IMAGE_UPLOADS"]),image.filename)
+			print(image)
+			
+			return redirect(request.url)
+	return render_template('upload_image.html')
 
 @app.route('/unprotected')
 def unprotected():
