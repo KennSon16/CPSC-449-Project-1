@@ -57,9 +57,9 @@ def token_required(f):
 		return f(*args, **kwargs)
 	return decorated
 
-app.config["IMAGE_UPLOADS"] = os.path.join('\CPSC-449-Project-1','uploads') # configure image upload folder to uploads
+app.config["IMAGE_UPLOADS"] = '../uploads' # configure image upload folder to uploads
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"] # configure allowed image extensions
-app.config["MAX_IMAGE_FILESIZE"] = 0.5 * 1024 * 1024 # configure max image file size, 0.5MB
+app.config["MAX_IMAGE_FILESIZE"] = 5 * 1024 * 1024 # configure max image file size, 0.5MB
 
 def allowed_image(filename):
 	if not "." in filename:
@@ -78,11 +78,13 @@ def allowed_image_filesize(filesize):
 	
 @app.route('/')
 
-@app.route('/upload-image', methods=['GET', 'POST'])
+@app.route('/upload_image', methods=['GET', 'POST'])
 def upload_image():
 	if request.method == 'POST':
 		if request.files:
 			#print(request.cookies)
+			print("\n",request.files,"\n")
+			print("\n",request.cookies.get("filesize"),"\n")
 			if not allowed_image_filesize(request.cookies.get("filesize")):
 				print("File exceeds maximum size")
 				return redirect(request.url)
@@ -95,7 +97,11 @@ def upload_image():
 				return redirect(request.url)
 			else:
 				filename = secure_filename(image.filename)
-				image.save(os.path.join(app.config["IMAGE_UPLOADS"]),image.filename)
+				print(f"\n Filename: {filename} \n")
+				print("\n BEFORE SAVE \n")
+				print(app.config["IMAGE_UPLOADS"])
+				image.save(app.config["IMAGE_UPLOADS"])
+				print("\n AFTER SAVE \n")
 			print(image)
 			
 			return redirect(request.url)
@@ -133,7 +139,7 @@ def login():
 			msg = 'Incorrect username / password !'
 	else:
 		if 'loggedin' in session:
-			return render_template('index.html', msg = msg)
+			return render_template('index.html', msg = msg, token = session['token'])
 	return render_template('login.html', msg = msg)
 
 @app.route('/logout')

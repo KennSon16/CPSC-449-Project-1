@@ -11,7 +11,7 @@
 				<h1>Side Bar</h1>
 				<ul>
 					<li><a href="{{url_for('index')}}">Index</a></li>
-                    <li class="active"><a href="{{url_for('upload-image')}}">Upload</a></li>
+                    <li class="active"><a href="{{url_for('upload_image')}}">Upload</a></li>
                     <li><a href="{{ url_for('display') }}">Display</a></li>
 					<li><a href="{{ url_for('update') }}">Update</a></li>
 					<li><a href="{{ url_for('logout') }}">Log out</a></li>
@@ -20,7 +20,7 @@
 			<div class="content" align="center">
 				<div class="topbar">
 					<h2>Welcome!! You are in Upload Page!! </h2>
-                    <form action = "/upload-image" method = "POST" enctype = "multipart/form-data">
+                    <form action = "/upload_image" method = "POST" enctype = "multipart/form-data">
                         <div class = "form group">
                             <label>Select image </label>
                             <div class = "custom-file">    
@@ -31,14 +31,9 @@
                         <button type = "submit" class = "btn btn-primary">Upload image </button>
                     </form>					
 				</div></br></br>
-				<div class="contentbar">
-					<div class="msg">{{ msg }}</div>
-					<p class="token">{{token}}</p>
-				</div>
-				
 			</div>
 		</div>
-        {%endblock%}
+        {%block content%}
         {%block script%}
         <script>
             function filesize(elem)
@@ -46,13 +41,14 @@
                 var file = elem.files[0];
                 var size = file.size;
                 document.cookie = `filesize=${size}`
-                if(size > 1000000)
+                if(size > 10000000)
                 {
-                    alert("File size is greater than 1MB");
+                    alert("File size is greater than 10MB");
                     elem.value = "";
                 }
             }
         </script>
-        {%endblock%}
+        {%endblock script%}
+        {%endblock content%}
 	</body>
 </html>
