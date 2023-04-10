@@ -110,9 +110,27 @@ def upload_image():
 			return redirect(request.url)
 	return render_template('upload_image.html')
 
-@app.route('/unprotected')
-def unprotected():
-	return jsonify({'message': 'Anyone can view this!'})
+
+@app.route('/public')
+def public():
+
+	cur.execute('SELECT COUNT(id) FROM 449_db.accounts;')
+	conn.commit()
+	temp = cur.fetchone()
+	num = temp['COUNT(id)']
+	#print(f"\n{num}\n")
+
+	i = 1
+	all_accounts = []
+	for i in range(num+1):
+		
+		cur.execute('SELECT id, username FROM accounts WHERE id = % s', (str(i)))
+		conn.commit()
+		single_account = cur.fetchone()
+		#print(f"\n\n{i} \n acc: {single_account}\n\n")
+		all_accounts.append(single_account)
+	#print(f"\n {all_accounts} \n")
+	return render_template('public.html', all_accounts = all_accounts)
 
 @app.route('/protected')
 @token_required
