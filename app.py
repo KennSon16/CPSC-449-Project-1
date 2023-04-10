@@ -21,7 +21,7 @@ app.permanent_session_lifetime=timedelta(minutes=10)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.secret_key = 'happykey'
-
+os.makedirs(os.path.join(app.instance_path, 'uploads'), exist_ok=True)
 #app.config['SECRET_KEY'] = 'tokenkey'
 
 
@@ -100,7 +100,10 @@ def upload_image():
 				print(f"\n Filename: {filename} \n")
 				print("\n BEFORE SAVE \n")
 				print(app.config["IMAGE_UPLOADS"])
-				image.save(app.config["IMAGE_UPLOADS"])
+				#image.save(app.config["IMAGE_UPLOADS"])
+				
+				image.save(os.path.join(app.instance_path, 'uploads', filename))
+
 				print("\n AFTER SAVE \n")
 			print(image)
 			
